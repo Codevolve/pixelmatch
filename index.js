@@ -2,9 +2,7 @@
 
 module.exports = pixelmatch;
 
-function pixelmatch(img1, img2, output, width, height, options) {
-
-    if (img1.length !== img2.length) throw new Error('Image sizes do not match.');
+function pixelmatch(img1, img2, output, width, height, max_width, max_height, options) {
 
     if (!options) options = {};
 
@@ -18,8 +16,13 @@ function pixelmatch(img1, img2, output, width, height, options) {
     // compare each pixel of one image against the other one
     for (var y = 0; y < height; y++) {
         for (var x = 0; x < width; x++) {
-
             var pos = (y * width + x) * 4;
+
+            if (y > max_height - 1 || x > max_width - 1) {
+                if (output) drawPixel(output, pos, 255, 0, 0);
+                diff++;
+                continue;
+            }
 
             // squared YUV distance between colors at this pixel position
             var delta = colorDelta(img1, img2, pos, pos);
